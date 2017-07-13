@@ -27,6 +27,11 @@ describe ParallelTests::Tasks do
       args = {:count => 2, :pattern => "plain", :options => "-p default --group-by steps"}
       expect(ParallelTests::Tasks.parse_args(args)).to eq([2, "plain", "-p default --group-by steps", ""])
     end
+
+    it "should return the count, pattern, options and exclude pattern" do
+      args = {:count => 2, :pattern => "plain", :options => "-p default --group-by steps", :exclude_pattern => 'some pattern'}
+      expect(ParallelTests::Tasks.parse_args(args)).to eq([2, "plain", "-p default --group-by steps", "some pattern"])
+    end
   end
 
   describe ".rails_env" do
