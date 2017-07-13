@@ -58,10 +58,10 @@ module ParallelTests
         end
       end
 
-      # parallel:spec[:count, :pattern, :options]
+      # parallel:spec[:count, :pattern, :options, exclude_pattern]
       def parse_args(args)
         # order as given by user
-        args = [args[:count], args[:pattern], args[:options]]
+        args = [args[:count], args[:pattern], args[:options], args[:exclude_pattern]]
 
         # count given or empty ?
         # parallel:spec[2,models,options]
@@ -70,8 +70,9 @@ module ParallelTests
         num_processes = count.to_i unless count.to_s.empty?
         pattern = args.shift
         options = args.shift
+        exclude_pattern = args.shift
 
-        [num_processes, pattern.to_s, options.to_s]
+        [num_processes, pattern.to_s, options.to_s, exclude_pattern.to_s]
       end
     end
   end
@@ -146,7 +147,7 @@ namespace :parallel do
       $LOAD_PATH << File.expand_path(File.join(File.dirname(__FILE__), '..'))
       require "parallel_tests"
 
-      count, pattern, options = ParallelTests::Tasks.parse_args(args)
+      count, pattern, options, exclude_pattern = ParallelTests::Tasks.parse_args(args)
       test_framework = {
         'spec' => 'rspec',
         'test' => 'test',
@@ -162,7 +163,8 @@ namespace :parallel do
       command = "#{Shellwords.escape executable} #{type} --type #{test_framework} " \
         "-n #{count} "                     \
         "--pattern '#{pattern}' "          \
-        "--test-options '#{options}'"
+        "--test-options '#{options}'"      \
+        "--exclude-pattern '#{exclude_pattern}'"
       if ParallelTests::WINDOWS
         ruby_binary = File.join(RbConfig::CONFIG['bindir'], RbConfig::CONFIG['ruby_install_name'])
         command = "#{ruby_binary} #{command}"
